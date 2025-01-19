@@ -1,5 +1,5 @@
 # Constants
-CONTAINER_REGISTRY="some_registry" # TODO: Point to your registry
+CONTAINER_REGISTRY="some_registry"# TODO: Point to your registry
 IMAGE_NAME="go-example-api"
 IMAGE_VERSION="v1.0.0"
 FULL_IMAGE="$(CONTAINER_REGISTRY)/$(IMAGE_NAME):$(IMAGE_VERSION)"
@@ -52,7 +52,8 @@ build_amd64:
 		--progress=plain \
 		--build-arg GOARCH="amd64" \
 		--build-arg APP_GIT_COMMIT="$(SHORT_SHA)" \
-		--build-arg APP_VERSION="$(IMAGE_VERSION)"
+		--build-arg APP_VERSION="$(IMAGE_VERSION)" \
+		.
 
 .PHONY: build_arm64
 build_arm64:
@@ -61,7 +62,8 @@ build_arm64:
 		--progress=plain \
 		--build-arg GOARCH="arm64" \
 		--build-arg APP_GIT_COMMIT="$(SHORT_SHA)" \
-		--build-arg APP_VERSION="$(IMAGE_VERSION)"
+		--build-arg APP_VERSION="$(IMAGE_VERSION)" \
+		.
 
 .PHONY: push_amd64
 push_amd64:
@@ -87,7 +89,7 @@ push_manifest:
 
 .PHONY: run_docker
 run_docker:
-	@echo "Running container with $(FULL_IMAGE)"
+	@echo "Running container with $(FULL_IMAGE)_AMD64"
 	@docker run -it --rm \
 		-e ACCOUNT_NAME=$(ACCOUNT_NAME) \
 		-e SAS_TOKEN=$(SAS_TOKEN) \

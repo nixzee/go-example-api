@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.2
 
 # Build Stage
-FROM golang:1.19 AS build
+FROM golang:1.23 AS build
 LABEL stage=build
 
 # Arguments (with default values where applicable)
@@ -21,13 +21,13 @@ ENV CGO_ENABLED=0
 WORKDIR /app
 
 # Copy go.mod and go.sum
-COPY go.mod go.sum ./
+COPY ./src/. .
 
 # Install dependencies
 RUN go mod tidy
 
 # Build the application
-RUN go build ${GO_FLAGS} -ldflags="-X 'main.VERSION=${APP_VERSION}' -X 'main.Commit=${APP_GIT_COMMIT}'" -o /app/main main.go
+RUN go build ${GO_FLAGS} -ldflags="-X 'main.VERSION=${APP_VERSION}' -X 'main.Commit=${APP_GIT_COMMIT}'" -o /app/main ./cmd/main.go
 
 # Production Stage
 FROM alpine:latest AS prod
@@ -39,6 +39,9 @@ WORKDIR /app
 
 # Copy the compiled binary from the build stage
 COPY --from=build /app/main .
+
+# Expose the application port (adjust if needed)
+EXPOSE 8080
 
 # Command to run the application
 CMD ["./main"]
