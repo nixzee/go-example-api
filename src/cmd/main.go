@@ -24,7 +24,7 @@ func main() {
 	}
 
 	// Get the implemented service (program)
-	program := service.NewProgam(Version, Commit)
+	program := service.NewProgram(Version, Commit)
 
 	// Create the instance
 	instance, err := bootstrap.New(program, config)

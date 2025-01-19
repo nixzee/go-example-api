@@ -1,5 +1,5 @@
 # Constants
-CONTAINER_REGISTRY=""
+CONTAINER_REGISTRY="some_registry" # TODO: Point to your registry
 IMAGE_NAME="go-example-api"
 IMAGE_VERSION="v1.0.0"
 FULL_IMAGE="$(CONTAINER_REGISTRY)/$(IMAGE_NAME):$(IMAGE_VERSION)"
@@ -88,4 +88,8 @@ push_manifest:
 .PHONY: run_docker
 run_docker:
 	@echo "Running container with $(FULL_IMAGE)"
-	@docker run -it --rm $(FULL_IMAGE)
+	@docker run -it --rm \
+		-e ACCOUNT_NAME=$(ACCOUNT_NAME) \
+		-e SAS_TOKEN=$(SAS_TOKEN) \
+		-p 8080:8080 \
+		$(FULL_IMAGE)
