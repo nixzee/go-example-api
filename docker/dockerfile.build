@@ -1,0 +1,44 @@
+# syntax=docker/dockerfile:1.2
+
+# Build Stage
+FROM golang:1.19 AS build
+LABEL stage=build
+
+# Arguments (with default values where applicable)
+ARG APP_GIT_COMMIT=unknown
+ARG APP_VERSION=1.0.0
+ARG GO_ARCH=amd64
+ARG GO_FLAGS=""
+
+# Environment Variables
+ENV GOARCH=$GO_ARCH
+ENV GOOS=linux
+ENV GOPATH=/go
+ENV PATH=$GOPATH/bin:/usr/local/go/bin:$PATH
+ENV CGO_ENABLED=0
+
+# Set working directory
+WORKDIR /app
+
+# Copy go.mod and go.sum
+COPY go.mod go.sum ./
+
+# Install dependencies
+RUN go mod tidy
+
+# Build the application
+RUN go build ${GO_FLAGS} -ldflags="-X 'main.VERSION=${APP_VERSION}' -X 'main.Commit=${APP_GIT_COMMIT}'" -o /app/main main.go
+
+# Production Stage
+FROM alpine:latest AS prod
+LABEL stage=prod
+
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the compiled binary from the build stage
+COPY --from=build /app/main .
+
+# Command to run the application
+CMD ["./main"]
